@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".statScreen">
+
+    <ImageView
+        android:id="@+id/statBackground"
+        android:layout_width="413dp"
+        android:layout_height="736dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@android:color/background_dark" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="411dp"
+        android:layout_height="126dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/tftBtn"
+            android:layout_width="309dp"
+            android:layout_height="136dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:alpha="0.75"
+            app:srcCompat="@drawable/tftlogo" />
+
+        <ImageButton
+            android:id="@+id/lolBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="136dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:alpha="0.25"
+            app:srcCompat="@drawable/lollogo" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="408dp"
+        android:layout_height="53dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/homeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.75"
+            app:srcCompat="@drawable/ic_home_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/statsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.25"
+            app:srcCompat="@drawable/ic_equalizer_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/searchBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.25"
+            app:srcCompat="@drawable/ic_search_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/leaderboardBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.25"
+            app:srcCompat="@drawable/ic_trophy_svgrepo_com" />
+
+        <ImageButton
+            android:id="@+id/settingsBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.25"
+            app:srcCompat="@drawable/ic_settings_black_24dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

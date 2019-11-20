@@ -7,8 +7,10 @@
     tools:context=".userScreen">
 
     <RelativeLayout
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_width="412dp"
+        android:layout_height="731dp"
+        android:gravity="center"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,17 +20,28 @@
             android:id="@+id/background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="fitXY"
             app:srcCompat="@android:color/background_dark" />
 
         <EditText
             android:id="@+id/summonerInput"
-            android:layout_width="308dp"
-            android:layout_height="46dp"
+            android:layout_width="307dp"
+            android:layout_height="47dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/custom_edit_text_bg"
             android:alpha="0.5"
+            android:background="@drawable/custom_edit_text_bg"
             android:ems="10"
             android:hint="Enter Summoner Name"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/summonerInput"
+            android:layout_centerInParent="true"
+            android:text="Go"
+            android:textAlignment="center" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
