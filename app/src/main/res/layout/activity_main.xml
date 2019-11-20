@@ -72,7 +72,7 @@
             app:srcCompat="@drawable/lol2" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/lolBtn"
             android:layout_width="wrap_content"
             android:layout_height="38dp"
             android:layout_alignParentBottom="true"
