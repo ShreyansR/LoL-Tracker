@@ -125,6 +125,7 @@ public class userScreen extends AppCompatActivity {
                     intent.putExtra("id", id);
                     intent.putExtra("revisionDate", revisionDate);
                     intent.putExtra("game", game);
+                    intent.putExtra("APIKey", APIKey);
                     startActivity(intent);
                 } catch (JSONException e) {
                     e.printStackTrace();
