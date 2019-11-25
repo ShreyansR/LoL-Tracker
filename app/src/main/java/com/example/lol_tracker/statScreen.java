@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class statScreen extends AppCompatActivity {
 
@@ -15,7 +16,14 @@ public class statScreen extends AppCompatActivity {
     ImageButton lolBtn;
     Intent intent;
     String game;
+    String name;
+    String puuid;
+    Integer summonerLevel;
+    String accountId;
+    String id;
+    Long revisionDate;
     ImageView background;
+    TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,9 +32,16 @@ public class statScreen extends AppCompatActivity {
         tftBtn = findViewById(R.id.tftBtn);
         lolBtn = findViewById(R.id.lolBtn);
         background = findViewById(R.id.statBackground);
+        textView = findViewById(R.id.textView);
 
         intent = getIntent();
         game = intent.getStringExtra("game");
+        name = intent.getStringExtra("name");
+        puuid = intent.getStringExtra("puuid");
+        summonerLevel = intent.getIntExtra("summonerLevel", 0);
+        accountId = intent.getStringExtra("accountId");
+        id = intent.getStringExtra("id");
+        revisionDate = intent.getLongExtra("revisionDate", 0);
 
         if (game.equals("tft")){
             tftBtn.setAlpha(0.75f);
@@ -60,5 +75,12 @@ public class statScreen extends AppCompatActivity {
                 background.setScaleType(ImageView.ScaleType.FIT_XY);
             }
         });
+
+        textView.setText("Name: " + name
+        + "\nPUUID: " + puuid
+        + "\nSummoner Level: " + summonerLevel
+        + "\nAccount ID: " + accountId
+        + "\nID: " + id
+        + "\nRevision Date: " + revisionDate);
     }
 }
