@@ -29,8 +29,10 @@ public class statScreen extends AppCompatActivity {
     ImageButton tftBtn;
     ImageButton lolBtn;
     ImageButton homeBtn;
+    ImageButton searchBtn;
     ImageButton statsBtn;
     ImageButton leaderboardBtn;
+    ImageButton settingsBtn;
     Intent intent;
     String game;
     String name;
@@ -57,7 +59,9 @@ public class statScreen extends AppCompatActivity {
         textView3 = findViewById(R.id.textView3);
         homeBtn = findViewById(R.id.homeBtn);
         statsBtn = findViewById(R.id.statsBtn);
+        searchBtn = findViewById(R.id.searchBtn);
         leaderboardBtn = findViewById(R.id.leaderboardBtn);
+        settingsBtn = findViewById(R.id.settingsBtn);
 
         intent = getIntent();
         game = intent.getStringExtra("game");
@@ -104,15 +108,73 @@ public class statScreen extends AppCompatActivity {
             }
         });
 
+        homeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                homeBtn.setAlpha(0.7f);
+                statsBtn.setAlpha(0.25f);
+                searchBtn.setAlpha(0.25f);
+                leaderboardBtn.setAlpha(0.25f);
+                settingsBtn.setAlpha(0.25f);
+
+            }
+        });
+
         statsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 homeBtn.setAlpha(0.25f);
-                leaderboardBtn.setAlpha(0.25f);
                 statsBtn.setAlpha(0.7f);
+                searchBtn.setAlpha(0.25f);
+                leaderboardBtn.setAlpha(0.25f);
+                settingsBtn.setAlpha(0.25f);
                 textView.setText("Name: " + name + "\nSummoner Level: " + summonerLevel);
                 String APICall = "https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + id + "?api_key=" + APIKey;
                 new RetrieveJSONArrayTask().execute(APICall);
+            }
+        });
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                homeBtn.setAlpha(0.25f);
+                statsBtn.setAlpha(0.25f);
+                searchBtn.setAlpha(0.7f);
+                leaderboardBtn.setAlpha(0.25f);
+                settingsBtn.setAlpha(0.25f);
+
+                if (game.equals("tft")){
+                    Intent intent = new Intent(statScreen.this, userScreen.class);
+                    intent.putExtra("game", "tft");
+                    startActivity(intent);
+                }
+                else if (game.equals("lol")){
+                    Intent intent = new Intent(statScreen.this, userScreen.class);
+                    intent.putExtra("game", "lol");
+                    startActivity(intent);
+                }
+            }
+        });
+
+        leaderboardBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                homeBtn.setAlpha(0.25f);
+                statsBtn.setAlpha(0.25f);
+                searchBtn.setAlpha(0.25f);
+                leaderboardBtn.setAlpha(0.7f);
+                settingsBtn.setAlpha(0.25f);
+            }
+        });
+
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                homeBtn.setAlpha(0.25f);
+                statsBtn.setAlpha(0.25f);
+                searchBtn.setAlpha(0.25f);
+                leaderboardBtn.setAlpha(0.25f);
+                settingsBtn.setAlpha(0.7f);
             }
         });
     }
