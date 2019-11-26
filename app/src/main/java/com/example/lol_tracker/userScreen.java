@@ -30,7 +30,7 @@ public class userScreen extends AppCompatActivity {
     String game;
     Button searchBtn;
     EditText summonerInput;
-    String APIKey = "RGAPI-98ebcb7a-1364-4e89-bca3-32a69b0f3b34";
+    String APIKey = "RGAPI-3ff3bf48-50cb-40fb-8420-29eb6dd19fa1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

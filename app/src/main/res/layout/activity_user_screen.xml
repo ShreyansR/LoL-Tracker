@@ -7,7 +7,7 @@
     tools:context=".userScreen">
 
     <RelativeLayout
-        android:layout_width="412dp"
+        android:layout_width="0dp"
         android:layout_height="731dp"
         android:gravity="center"
         android:orientation="vertical"

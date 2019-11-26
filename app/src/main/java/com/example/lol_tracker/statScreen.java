@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 public class statScreen extends AppCompatActivity {
 
@@ -33,6 +36,7 @@ public class statScreen extends AppCompatActivity {
     ImageButton statsBtn;
     ImageButton leaderboardBtn;
     ImageButton settingsBtn;
+    ListView ldrBoardList;
     Intent intent;
     String game;
     String name;
@@ -46,6 +50,7 @@ public class statScreen extends AppCompatActivity {
     TextView textView;
     TextView textView2;
     TextView textView3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +67,9 @@ public class statScreen extends AppCompatActivity {
         searchBtn = findViewById(R.id.searchBtn);
         leaderboardBtn = findViewById(R.id.leaderboardBtn);
         settingsBtn = findViewById(R.id.settingsBtn);
+        ldrBoardList = findViewById(R.id.ldrboardList);
+        //ArrayList<String> leaders = new ArrayList<>();
+
 
         intent = getIntent();
         game = intent.getStringExtra("game");
@@ -128,6 +136,8 @@ public class statScreen extends AppCompatActivity {
                 searchBtn.setAlpha(0.25f);
                 leaderboardBtn.setAlpha(0.25f);
                 settingsBtn.setAlpha(0.25f);
+                textView.setText("");
+                textView2.setText("");
                 textView.setText("Name: " + name + "\nSummoner Level: " + summonerLevel);
                 String APICall = "https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + id + "?api_key=" + APIKey;
                 new RetrieveJSONArrayTask().execute(APICall);
@@ -164,6 +174,11 @@ public class statScreen extends AppCompatActivity {
                 searchBtn.setAlpha(0.25f);
                 leaderboardBtn.setAlpha(0.7f);
                 settingsBtn.setAlpha(0.25f);
+
+                if (game.equals("lol")){
+                    String APICall = "https://na1.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1&api_key=" + APIKey;
+                    new RetrieveLeaderboard().execute(APICall);
+                }
             }
         });
 
@@ -217,7 +232,6 @@ public class statScreen extends AppCompatActivity {
 
     class RetrieveJSONArrayTask extends AsyncTask<String, Void, JSONArray> {
         private Exception exception;
-
         protected JSONArray doInBackground(String... APICall) {
             try {
                 JSONArray json = readJsonArrayFromUrl(APICall[0]);
@@ -232,34 +246,78 @@ public class statScreen extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
             } else {
                 try {
-                    JSONObject jsonObject = json.getJSONObject(0);
+                    if(game.equals("lol")) {
+                        textView.setVisibility(View.VISIBLE);
+                        textView2.setVisibility(View.VISIBLE);
+                        textView3.setVisibility(View.VISIBLE);
+                        ldrBoardList.setVisibility(View.INVISIBLE);
+                        JSONObject jsonObject = json.getJSONObject(0);
 
-                    String queueType = (String) jsonObject.get("queueType");
-                    Integer wins = (Integer) jsonObject.get("wins");
-                    Integer losses = (Integer) jsonObject.get("losses");
-                    String rank = (String) jsonObject.get("rank");
-                    String tier = (String) jsonObject.get("tier");
-                    Integer leaguePoints = (Integer) jsonObject.get("leaguePoints");
-                    textView2.setText("Queue Type: " + queueType
-                            + "\nWins: " + wins
-                            + "\nLosses: " + losses
-                            + "\nRank: " + rank
-                            + " " + tier
-                            + "\nLeague Points: " + leaguePoints);
+                        String queueType = (String) jsonObject.get("queueType");
+                        Integer wins = (Integer) jsonObject.get("wins");
+                        Integer losses = (Integer) jsonObject.get("losses");
+                        String rank = (String) jsonObject.get("rank");
+                        String tier = (String) jsonObject.get("tier");
+                        Integer leaguePoints = (Integer) jsonObject.get("leaguePoints");
+                        textView2.setText("Queue Type: " + queueType
+                                + "\nWins: " + wins
+                                + "\nLosses: " + losses
+                                + "\nRank: " + rank
+                                + " " + tier
+                                + "\nLeague Points: " + leaguePoints);
 
-                    jsonObject = json.getJSONObject(1);
-                    queueType = (String) jsonObject.get("queueType");
-                    wins = (Integer) jsonObject.get("wins");
-                    losses = (Integer) jsonObject.get("losses");
-                    rank = (String) jsonObject.get("rank");
-                    tier = (String) jsonObject.get("tier");
-                    leaguePoints = (Integer) jsonObject.get("leaguePoints");
-                    textView3.setText("Queue Type: " + queueType
-                            + "\nWins: " + wins
-                            + "\nLosses: " + losses
-                            + "\nRank: " + rank
-                            + " " + tier
-                            + "\nLeague Points: " + leaguePoints);
+                        jsonObject = json.getJSONObject(1);
+                        queueType = (String) jsonObject.get("queueType");
+                        wins = (Integer) jsonObject.get("wins");
+                        losses = (Integer) jsonObject.get("losses");
+                        rank = (String) jsonObject.get("rank");
+                        tier = (String) jsonObject.get("tier");
+                        leaguePoints = (Integer) jsonObject.get("leaguePoints");
+                        textView3.setText("Queue Type: " + queueType
+                                + "\nWins: " + wins
+                                + "\nLosses: " + losses
+                                + "\nRank: " + rank
+                                + " " + tier
+                                + "\nLeague Points: " + leaguePoints);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    class RetrieveLeaderboard extends AsyncTask<String, Void, JSONArray> {
+        private Exception exception;
+        ArrayList<String> leaders = new ArrayList<>();
+        protected JSONArray doInBackground(String... APICall) {
+            try {
+                JSONArray json = readJsonArrayFromUrl(APICall[0]);
+                return json;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        protected void onPostExecute(JSONArray json) {
+
+            textView.setVisibility(View.INVISIBLE);
+            textView2.setVisibility(View.INVISIBLE);
+            textView3.setVisibility(View.INVISIBLE);
+            ldrBoardList.setVisibility(View.VISIBLE);
+            if (json == null) {
+                Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    for(int i = 0; i < json.length(); i++) {
+                        JSONObject jsonObject = json.getJSONObject(i);
+                        String summonerName = (String) jsonObject.get("summonerName");
+                        leaders.add(summonerName);
+                        //textView2.append("Summoner Name: " + summonerName);
+                    }
+                    ArrayAdapter adapter = new ArrayAdapter<String>(statScreen.this, android.R.layout.simple_list_item_1,leaders);
+                    ldrBoardList.setAdapter(adapter);
+                    System.out.println(leaders);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
