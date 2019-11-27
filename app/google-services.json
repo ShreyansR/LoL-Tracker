@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1069773683734",
+    "firebase_url": "https://lolguru.firebaseio.com",
+    "project_id": "lolguru",
+    "storage_bucket": "lolguru.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069773683734:android:a6e91d5df6dbdd38f64937",
+        "android_client_info": {
+          "package_name": "com.example.lol_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069773683734-ubrk8q5v24ijdh798h41eqbengfk432h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lol_tracker",
+            "certificate_hash": "c5538fb8db55d9a592b51970c6df396295890e27"
+          }
+        },
+        {
+          "client_id": "1069773683734-fo4g1s5l9a3velvs7rk864jbf5l1g9go.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5eirUePD9GPc_sSuCSGE42ASV5OgNiWY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069773683734-fo4g1s5l9a3velvs7rk864jbf5l1g9go.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

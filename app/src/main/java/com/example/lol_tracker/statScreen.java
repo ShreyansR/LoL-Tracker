@@ -14,6 +14,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,6 +67,7 @@ public class statScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stat_screen);
 
+
         tftBtn = findViewById(R.id.tftBtn);
         lolBtn = findViewById(R.id.lolBtn);
         background = findViewById(R.id.statBackground);
@@ -81,7 +85,6 @@ public class statScreen extends AppCompatActivity {
         homeScroll = findViewById(R.id.homeScroll);
 
 
-
         intent = getIntent();
         game = intent.getStringExtra("game");
         name = intent.getStringExtra("name");
@@ -91,7 +94,6 @@ public class statScreen extends AppCompatActivity {
         id = intent.getStringExtra("id");
         revisionDate = intent.getLongExtra("revisionDate", 0);
         APIKey = intent.getStringExtra("APIKey");
-
 
 
         if (game.equals("tft")){
