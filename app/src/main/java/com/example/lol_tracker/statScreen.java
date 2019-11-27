@@ -26,6 +26,9 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static com.example.lol_tracker.userScreen.readJsonFromUrl;
 
@@ -89,8 +92,6 @@ public class statScreen extends AppCompatActivity {
         revisionDate = intent.getLongExtra("revisionDate", 0);
         APIKey = intent.getStringExtra("APIKey");
 
-        String APICall = "https://na1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + APIKey;
-        new RetrieveFreeChampions().execute(APICall);
 
 
         if (game.equals("tft")){
@@ -98,12 +99,16 @@ public class statScreen extends AppCompatActivity {
             lolBtn.setAlpha(0.3f);
             background.setImageResource(R.drawable.tftbackground);
             background.setScaleType(ImageView.ScaleType.FIT_XY);
+            setInitialInvisibility();
         }
         else if (game.equals("lol")) {
             lolBtn.setAlpha(0.75f);
             tftBtn.setAlpha(0.3f);
+            setInitialInvisibility();
             background.setImageResource(R.drawable.dianab);
             background.setScaleType(ImageView.ScaleType.FIT_XY);
+            String APICall = "https://na1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + APIKey;
+            new RetrieveFreeChampions().execute(APICall);
         }
 
 
@@ -131,6 +136,8 @@ public class statScreen extends AppCompatActivity {
                 background.setScaleType(ImageView.ScaleType.FIT_XY);
                 setInitialInvisibility();
                 resetBottomTabs(0.7f, 0.25f,0.25f, 0.25f, 0.25f);
+                String APICall = "https://na1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + APIKey;
+                new RetrieveFreeChampions().execute(APICall);
             }
         });
 
@@ -140,6 +147,7 @@ public class statScreen extends AppCompatActivity {
                 resetBottomTabs(0.7f, 0.25f,0.25f, 0.25f, 0.25f);
 
                 if(game.equals("lol")) {
+                    homeList.setVisibility(View.VISIBLE);
                     String APICall = "https://na1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + APIKey;
                     new RetrieveFreeChampions().execute(APICall);
                 }
@@ -154,11 +162,17 @@ public class statScreen extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 resetBottomTabs(0.25f, 0.7f,0.25f, 0.25f, 0.25f);
-                textView.setText("");
-                textView2.setText("");
-                textView.setText("Name: " + name + "\nSummoner Level: " + summonerLevel);
-                String APICall = "https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + id + "?api_key=" + APIKey;
-                new RetrieveJSONArrayTask().execute(APICall);
+
+                if(game.equals("lol")) {
+                    textView.setText("");
+                    textView2.setText("");
+                    textView.setText("Name: " + name + "\nSummoner Level: " + summonerLevel);
+                    String APICall = "https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + id + "?api_key=" + APIKey;
+                    new RetrieveJSONArrayTask().execute(APICall);
+                }
+                else if (game.equals("tft")){
+                    setInitialInvisibility();
+                }
             }
         });
 
@@ -187,6 +201,11 @@ public class statScreen extends AppCompatActivity {
 
                 if (game.equals("lol")){
                     String APICall = "https://na1.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1&api_key=" + APIKey;
+                    new RetrieveLeaderboard().execute(APICall);
+                }
+
+                else if (game.equals("tft")) {
+                    String APICall = "https://na1.api.riotgames.com/tft/league/v1/entries/PLATINUM/I?page=1&api_key=" + APIKey;
                     new RetrieveLeaderboard().execute(APICall);
                 }
             }
@@ -297,6 +316,8 @@ public class statScreen extends AppCompatActivity {
     class RetrieveLeaderboard extends AsyncTask<String, Void, JSONArray> {
         private Exception exception;
         ArrayList<String> leaders = new ArrayList<>();
+        ArrayList<Integer> leaguePts = new ArrayList<>();
+        ArrayList<String> rank = new ArrayList<>();
         protected JSONArray doInBackground(String... APICall) {
             try {
                 JSONArray json = readJsonArrayFromUrl(APICall[0]);
@@ -315,17 +336,57 @@ public class statScreen extends AppCompatActivity {
             ldrScroll.setVisibility(View.VISIBLE);
             //homeList.setVisibility(View.GONE);
             homeScroll.setVisibility(View.GONE);
+            JSONArray sortedArray = new JSONArray();
+            try {
+
+                List<JSONObject> jsonValues = new ArrayList<JSONObject>();
+                for (int i = 0; i < json.length(); i ++) {
+                    jsonValues.add(json.getJSONObject(i));
+                }
+
+                Collections.sort(jsonValues, new Comparator<JSONObject>() {
+                    private static final String KEY_NAME = "leaguePoints";
+
+                    @Override
+                    public int compare(JSONObject o1, JSONObject o2) {
+                        Integer valA = 0;
+                        Integer valB = 0;
+
+                        try {
+                            valA = (Integer) o1.get(KEY_NAME);
+                            valB = (Integer) o2.get(KEY_NAME);
+                        }
+                        catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        return -valA.compareTo(valB);
+                    }
+                });
+                for (int i = 0; i < json.length(); i++){
+                    sortedArray.put(jsonValues.get(i));
+                }
+
+                System.out.println(sortedArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
             if (json == null) {
                 Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
             } else {
                 try {
-                    for(int i = 0; i < json.length(); i++) {
-                        JSONObject jsonObject = json.getJSONObject(i);
+                    for(int i = 0; i < sortedArray.length(); i++) {
+                        JSONObject jsonObject = sortedArray.getJSONObject(i);
                         String summonerName = (String) jsonObject.get("summonerName");
+                        int leaguePoints = (Integer) jsonObject.get("leaguePoints");
+                        String tier = (String) jsonObject.get("tier");
                         leaders.add(summonerName);
-                        //textView2.append("Summoner Name: " + summonerName);
+                        leaguePts.add(leaguePoints);
+                        rank.add(tier);
                     }
-                    ArrayAdapter adapter = new ArrayAdapter<String>(statScreen.this, android.R.layout.simple_list_item_1,leaders);
+
+                    ldrBoardAdapter adapter = new ldrBoardAdapter(statScreen.this, leaders, leaguePts, rank);
                     ldrBoardList.setAdapter(adapter);
                     System.out.println(leaders);
                 } catch (JSONException e) {
