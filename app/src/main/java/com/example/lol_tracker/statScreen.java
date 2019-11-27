@@ -102,7 +102,7 @@ public class statScreen extends AppCompatActivity {
         else if (game.equals("lol")) {
             lolBtn.setAlpha(0.75f);
             tftBtn.setAlpha(0.3f);
-            background.setImageResource(R.drawable.diana);
+            background.setImageResource(R.drawable.dianab);
             background.setScaleType(ImageView.ScaleType.FIT_XY);
         }
 
@@ -127,7 +127,7 @@ public class statScreen extends AppCompatActivity {
                 game = "lol";
                 lolBtn.setAlpha(0.75f);
                 tftBtn.setAlpha(0.3f);
-                background.setImageResource(R.drawable.diana);
+                background.setImageResource(R.drawable.dianab);
                 background.setScaleType(ImageView.ScaleType.FIT_XY);
                 setInitialInvisibility();
                 resetBottomTabs(0.7f, 0.25f,0.25f, 0.25f, 0.25f);
@@ -335,9 +335,10 @@ public class statScreen extends AppCompatActivity {
         }
     }
 
-    class RetrieveFreeChampions extends AsyncTask<String, Void, JSONObject> {
+    class RetrieveFreeChampions extends AsyncTask<String, Void, JSONObject>  {
         private Exception exception;
         ArrayList<String> champs = new ArrayList<>();
+        String[] champNames = new String[15];
         protected JSONObject doInBackground(String... APICall) {
             try {
                 JSONObject json =  readJsonFromUrl(APICall[0]);
@@ -347,8 +348,9 @@ public class statScreen extends AppCompatActivity {
             }
         }
 
-        protected void onPostExecute(JSONObject json) {
+        protected void onPostExecute(JSONObject json) throws NullPointerException{
             //ArrayList<Integer> champs = new ArrayList<>();
+            String[] pic;
             textView.setVisibility(View.INVISIBLE);
             textView2.setVisibility(View.INVISIBLE);
             textView3.setVisibility(View.INVISIBLE);
@@ -367,9 +369,15 @@ public class statScreen extends AppCompatActivity {
                         System.out.println(champ_ids.getInt(i));
                         //get_name(champ_ids.getInt(i));
                         champs.add(get_name(champ_ids.getInt(i)));
+                        champNames[i] = get_name(champ_ids.getInt(i));
                     }
 
-                    ArrayAdapter adapter = new ArrayAdapter<String>(statScreen.this, android.R.layout.simple_list_item_1,champs);
+                    Integer[] imgid = new Integer[15];
+                    for (int i = 0; i < champNames.length; i++) {
+                        imgid[i] = getResources().getIdentifier(champNames[i].replace("'", "").toLowerCase(), "drawable", getPackageName());
+                        System.out.println(imgid[i]);
+                    }
+                    MyListAdapter adapter = new MyListAdapter(statScreen.this, champNames, imgid);
                     homeList.setAdapter(adapter);
                     System.out.println(champs);
                     //System.out.println(champs.toString());
