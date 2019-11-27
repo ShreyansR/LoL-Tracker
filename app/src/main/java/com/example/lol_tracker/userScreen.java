@@ -30,7 +30,7 @@ public class userScreen extends AppCompatActivity {
     String game;
     Button searchBtn;
     EditText summonerInput;
-    String APIKey = "RGAPI-3ff3bf48-50cb-40fb-8420-29eb6dd19fa1";
+    String APIKey = "RGAPI-864da886-5db4-4247-b46c-a0ff90d194f6";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class userScreen extends AppCompatActivity {
         }
     }
 
-    //reads all the characters coming in and builds it into a string
+    //reads all the characters coming in and builds it into ldrScroll string
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;

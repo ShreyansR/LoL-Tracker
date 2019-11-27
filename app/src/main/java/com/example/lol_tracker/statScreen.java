@@ -7,10 +7,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +27,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+import static com.example.lol_tracker.userScreen.readJsonFromUrl;
+
 public class statScreen extends AppCompatActivity {
 
     ImageButton tftBtn;
@@ -37,6 +39,7 @@ public class statScreen extends AppCompatActivity {
     ImageButton leaderboardBtn;
     ImageButton settingsBtn;
     ListView ldrBoardList;
+    ListView homeList;
     Intent intent;
     String game;
     String name;
@@ -50,6 +53,8 @@ public class statScreen extends AppCompatActivity {
     TextView textView;
     TextView textView2;
     TextView textView3;
+    ScrollView ldrScroll;
+    ScrollView homeScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +73,10 @@ public class statScreen extends AppCompatActivity {
         leaderboardBtn = findViewById(R.id.leaderboardBtn);
         settingsBtn = findViewById(R.id.settingsBtn);
         ldrBoardList = findViewById(R.id.ldrboardList);
-        //ArrayList<String> leaders = new ArrayList<>();
+        homeList = findViewById(R.id.champsList);
+        ldrScroll = findViewById(R.id.ldrScroll);
+        homeScroll = findViewById(R.id.homeScroll);
+
 
 
         intent = getIntent();
@@ -80,6 +88,10 @@ public class statScreen extends AppCompatActivity {
         id = intent.getStringExtra("id");
         revisionDate = intent.getLongExtra("revisionDate", 0);
         APIKey = intent.getStringExtra("APIKey");
+
+        String APICall = "https://na1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + APIKey;
+        new RetrieveFreeChampions().execute(APICall);
+
 
         if (game.equals("tft")){
             tftBtn.setAlpha(0.75f);
@@ -94,6 +106,8 @@ public class statScreen extends AppCompatActivity {
             background.setScaleType(ImageView.ScaleType.FIT_XY);
         }
 
+
+
         tftBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,6 +116,8 @@ public class statScreen extends AppCompatActivity {
                 lolBtn.setAlpha(0.3f);
                 background.setImageResource(R.drawable.tftbackground);
                 background.setScaleType(ImageView.ScaleType.FIT_XY);
+                setInitialInvisibility();
+                resetBottomTabs(0.7f, 0.25f,0.25f, 0.25f, 0.25f);
             }
         });
 
@@ -113,17 +129,23 @@ public class statScreen extends AppCompatActivity {
                 tftBtn.setAlpha(0.3f);
                 background.setImageResource(R.drawable.diana);
                 background.setScaleType(ImageView.ScaleType.FIT_XY);
+                setInitialInvisibility();
+                resetBottomTabs(0.7f, 0.25f,0.25f, 0.25f, 0.25f);
             }
         });
 
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                homeBtn.setAlpha(0.7f);
-                statsBtn.setAlpha(0.25f);
-                searchBtn.setAlpha(0.25f);
-                leaderboardBtn.setAlpha(0.25f);
-                settingsBtn.setAlpha(0.25f);
+                resetBottomTabs(0.7f, 0.25f,0.25f, 0.25f, 0.25f);
+
+                if(game.equals("lol")) {
+                    String APICall = "https://na1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + APIKey;
+                    new RetrieveFreeChampions().execute(APICall);
+                }
+                else if (game.equals("tft")) {
+                    homeList.setVisibility(View.INVISIBLE);
+                }
 
             }
         });
@@ -131,11 +153,7 @@ public class statScreen extends AppCompatActivity {
         statsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                homeBtn.setAlpha(0.25f);
-                statsBtn.setAlpha(0.7f);
-                searchBtn.setAlpha(0.25f);
-                leaderboardBtn.setAlpha(0.25f);
-                settingsBtn.setAlpha(0.25f);
+                resetBottomTabs(0.25f, 0.7f,0.25f, 0.25f, 0.25f);
                 textView.setText("");
                 textView2.setText("");
                 textView.setText("Name: " + name + "\nSummoner Level: " + summonerLevel);
@@ -147,11 +165,7 @@ public class statScreen extends AppCompatActivity {
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                homeBtn.setAlpha(0.25f);
-                statsBtn.setAlpha(0.25f);
-                searchBtn.setAlpha(0.7f);
-                leaderboardBtn.setAlpha(0.25f);
-                settingsBtn.setAlpha(0.25f);
+                resetBottomTabs(0.25f, 0.25f,0.7f, 0.25f, 0.25f);
 
                 if (game.equals("tft")){
                     Intent intent = new Intent(statScreen.this, userScreen.class);
@@ -169,11 +183,7 @@ public class statScreen extends AppCompatActivity {
         leaderboardBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                homeBtn.setAlpha(0.25f);
-                statsBtn.setAlpha(0.25f);
-                searchBtn.setAlpha(0.25f);
-                leaderboardBtn.setAlpha(0.7f);
-                settingsBtn.setAlpha(0.25f);
+                resetBottomTabs(0.25f, 0.25f,0.25f, 0.7f, 0.25f);
 
                 if (game.equals("lol")){
                     String APICall = "https://na1.api.riotgames.com/lol/league-exp/v4/entries/RANKED_SOLO_5x5/CHALLENGER/I?page=1&api_key=" + APIKey;
@@ -185,11 +195,7 @@ public class statScreen extends AppCompatActivity {
         settingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                homeBtn.setAlpha(0.25f);
-                statsBtn.setAlpha(0.25f);
-                searchBtn.setAlpha(0.25f);
-                leaderboardBtn.setAlpha(0.25f);
-                settingsBtn.setAlpha(0.7f);
+                resetBottomTabs(0.25f, 0.25f,0.25f, 0.25f, 0.7f);
             }
         });
     }
@@ -220,7 +226,7 @@ public class statScreen extends AppCompatActivity {
         }
     }
 
-    //reads all the characters coming in and builds it into a string
+    //reads all the characters coming in and builds it into ldrScroll string
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;
@@ -250,7 +256,8 @@ public class statScreen extends AppCompatActivity {
                         textView.setVisibility(View.VISIBLE);
                         textView2.setVisibility(View.VISIBLE);
                         textView3.setVisibility(View.VISIBLE);
-                        ldrBoardList.setVisibility(View.INVISIBLE);
+                        ldrScroll.setVisibility(View.GONE);
+                        homeScroll.setVisibility(View.GONE);
                         JSONObject jsonObject = json.getJSONObject(0);
 
                         String queueType = (String) jsonObject.get("queueType");
@@ -304,7 +311,10 @@ public class statScreen extends AppCompatActivity {
             textView.setVisibility(View.INVISIBLE);
             textView2.setVisibility(View.INVISIBLE);
             textView3.setVisibility(View.INVISIBLE);
-            ldrBoardList.setVisibility(View.VISIBLE);
+            //ldrBoardList.setVisibility(View.VISIBLE);
+            ldrScroll.setVisibility(View.VISIBLE);
+            //homeList.setVisibility(View.GONE);
+            homeScroll.setVisibility(View.GONE);
             if (json == null) {
                 Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
             } else {
@@ -324,4 +334,101 @@ public class statScreen extends AppCompatActivity {
             }
         }
     }
+
+    class RetrieveFreeChampions extends AsyncTask<String, Void, JSONObject> {
+        private Exception exception;
+        ArrayList<String> champs = new ArrayList<>();
+        protected JSONObject doInBackground(String... APICall) {
+            try {
+                JSONObject json =  readJsonFromUrl(APICall[0]);
+                return json;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        protected void onPostExecute(JSONObject json) {
+            //ArrayList<Integer> champs = new ArrayList<>();
+            textView.setVisibility(View.INVISIBLE);
+            textView2.setVisibility(View.INVISIBLE);
+            textView3.setVisibility(View.INVISIBLE);
+            //ldrBoardList.setVisibility(View.GONE);
+            ldrScroll.setVisibility(View.GONE);
+            //homeList.setVisibility(View.VISIBLE);
+            homeScroll.setVisibility(View.VISIBLE);
+            if (json == null) {
+                Toast.makeText(getApplicationContext(), "Invalid Summoner Name", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    JSONArray champ_ids = json.getJSONArray("freeChampionIds");
+
+                    for (int i = 0; i < champ_ids.length(); i++) {
+                        //champs.add(champ_ids.getInt(i));
+                        System.out.println(champ_ids.getInt(i));
+                        //get_name(champ_ids.getInt(i));
+                        champs.add(get_name(champ_ids.getInt(i)));
+                    }
+
+                    ArrayAdapter adapter = new ArrayAdapter<String>(statScreen.this, android.R.layout.simple_list_item_1,champs);
+                    homeList.setAdapter(adapter);
+                    System.out.println(champs);
+                    //System.out.println(champs.toString());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public String get_name (int id) {
+        BufferedReader reader;
+        String line;
+        String champName = "";
+        try {
+            final InputStream file = getAssets().open("champions.txt");
+            reader = new BufferedReader(new InputStreamReader(file));
+            line = reader.readLine();
+            while(line != null) {
+                String[] data = line.split(":", 2);
+                if (data[0].equals(Integer.toString(id))){
+                    System.out.println(data[1]);
+                    champName = data[1];
+                    break;
+                }
+                else
+                    line = reader.readLine();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return champName;
+    }
+
+    public void setInitialInvisibility(){
+        if(game.equals("tft")) {
+            ldrScroll.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
+            textView2.setVisibility(View.INVISIBLE);
+            textView3.setVisibility(View.INVISIBLE);
+            homeScroll.setVisibility(View.INVISIBLE);
+        }
+        else if(game.equals("lol")) {
+            homeScroll.setVisibility(View.VISIBLE);
+            ldrScroll.setVisibility(View.GONE);
+            textView.setVisibility(View.INVISIBLE);
+            textView2.setVisibility(View.INVISIBLE);
+            textView3.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void resetBottomTabs (float a, float b, float c, float d, float e) {
+        homeBtn.setAlpha(a);
+        statsBtn.setAlpha(b);
+        searchBtn.setAlpha(c);
+        leaderboardBtn.setAlpha(d);
+        settingsBtn.setAlpha(e);
+    }
+
 }
