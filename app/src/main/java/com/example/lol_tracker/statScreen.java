@@ -1,10 +1,12 @@
 package com.example.lol_tracker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -14,8 +16,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +34,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -37,6 +43,8 @@ import static com.example.lol_tracker.userScreen.readJsonFromUrl;
 
 public class statScreen extends AppCompatActivity {
 
+    FirebaseDatabase database;
+    DatabaseReference dbRef;
     ImageButton tftBtn;
     ImageButton lolBtn;
     ImageButton homeBtn;
@@ -96,12 +104,47 @@ public class statScreen extends AppCompatActivity {
         APIKey = intent.getStringExtra("APIKey");
 
 
+
+
         if (game.equals("tft")){
             tftBtn.setAlpha(0.75f);
             lolBtn.setAlpha(0.3f);
             background.setImageResource(R.drawable.tftbackground);
             background.setScaleType(ImageView.ScaleType.FIT_XY);
             setInitialInvisibility();
+            database = FirebaseDatabase.getInstance();
+            dbRef = database.getReference("builds");
+
+            dbRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                    for(DataSnapshot item: dataSnapshot.getChildren()){
+//                        Log.d("TAG","Value is " + item.child("champions").getValue().toString() );
+//                        Log.d("TAG","Value is " + item.child("synergies").getValue().toString() );
+                        Log.d("TAG","Value is " + item.child("name").getValue().toString());
+                        String temp = item.child("champions").toString();
+                        String champions = temp.substring(1,temp.length()-2);
+
+                        List<String> champs = Arrays.asList(champions.split(","));
+
+                        String tmp = item.child("synergies").toString();
+                        String synergies = tmp.substring(1,tmp.length()-2);
+
+                        List<String> syns = Arrays.asList(synergies.split(","));
+
+
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.w("TAG", "Failed to read value", databaseError.toException());
+                }
+            });
         }
         else if (game.equals("lol")) {
             lolBtn.setAlpha(0.75f);
