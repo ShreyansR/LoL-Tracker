@@ -612,7 +612,7 @@ public class statScreen extends AppCompatActivity {
                         champion = (Integer) jsonObject.get("champion");
                         queue = (Integer) jsonObject.get("queue");
 
-                        matchImg2.setImageResource(getResources().getIdentifier(get_name(champion).replace("'", "").toLowerCase(), "drawable", getPackageName()));
+                        matchImg2.setImageResource(getResources().getIdentifier(get_name(champion).replace("'", "").replace(" ", "").toLowerCase(), "drawable", getPackageName()));
                         matchLane2.setText("Lane: " + lane);
                         matchChamp2.setText(get_name(champion));
 
@@ -688,7 +688,7 @@ public class statScreen extends AppCompatActivity {
                             if (participantId == (Integer) player.get("participantId")) {
                                 JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
                                 kills = (Integer) statsObject.get("kills");
-                                deaths = (Integer) statsObject.get("kills");
+                                deaths = (Integer) statsObject.get("deaths");
                                 assists = (Integer) statsObject.get("assists");
                                 champLevel = (Integer) statsObject.get("champLevel");
                                 win = (Boolean) statsObject.get("win");
@@ -764,7 +764,7 @@ public class statScreen extends AppCompatActivity {
                         if(participantId == (Integer) player.get("participantId")) {
                             JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
                             kills = (Integer) statsObject.get("kills");
-                            deaths = (Integer) statsObject.get("kills");
+                            deaths = (Integer) statsObject.get("deaths");
                             assists = (Integer) statsObject.get("assists");
                             champLevel = (Integer) statsObject.get("champLevel");
                             win = (Boolean) statsObject.get("win");
@@ -814,7 +814,7 @@ public class statScreen extends AppCompatActivity {
                         if(participantId == (Integer) player.get("participantId")) {
                             JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
                             kills = (Integer) statsObject.get("kills");
-                            deaths = (Integer) statsObject.get("kills");
+                            deaths = (Integer) statsObject.get("deaths");
                             assists = (Integer) statsObject.get("assists");
                             champLevel = (Integer) statsObject.get("champLevel");
                             win = (Boolean) statsObject.get("win");
@@ -864,7 +864,7 @@ public class statScreen extends AppCompatActivity {
                         if(participantId == (Integer) player.get("participantId")) {
                             JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
                             kills = (Integer) statsObject.get("kills");
-                            deaths = (Integer) statsObject.get("kills");
+                            deaths = (Integer) statsObject.get("deaths");
                             assists = (Integer) statsObject.get("assists");
                             champLevel = (Integer) statsObject.get("champLevel");
                             win = (Boolean) statsObject.get("win");
