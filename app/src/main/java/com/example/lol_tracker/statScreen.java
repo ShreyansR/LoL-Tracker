@@ -49,6 +49,7 @@ public class statScreen extends AppCompatActivity {
     ImageButton tftBtn, lolBtn, homeBtn, searchBtn, statsBtn, leaderboardBtn, settingsBtn;
     ListView ldrBoardList;
     ListView homeList;
+    ListView build_List;
     Intent intent;
     String game;
     String name;
@@ -64,6 +65,7 @@ public class statScreen extends AppCompatActivity {
     TextView rankFlex;
     ScrollView ldrScroll;
     ScrollView homeScroll;
+    ScrollView buildScroll;
     ScrollView matchesScroll;
     TextView summonerName;
     LinearLayout statTop;
@@ -77,7 +79,9 @@ public class statScreen extends AppCompatActivity {
     TextView matchLane1, matchLane2, matchLane3, matchLane4;
     TextView matchKills1, matchKills2, matchKills3, matchKills4;
     TextView matchDeaths1, matchDeaths2, matchDeaths3, matchDeaths4;
-
+    List<String> champs ;
+    List<String> syns ;
+    List<build> buildsList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,8 +101,10 @@ public class statScreen extends AppCompatActivity {
         settingsBtn = findViewById(R.id.settingsBtn);
         ldrBoardList = findViewById(R.id.ldrboardList);
         homeList = findViewById(R.id.champsList);
+        build_List = findViewById(R.id.buildsList);
         ldrScroll = findViewById(R.id.ldrScroll);
         homeScroll = findViewById(R.id.homeScroll);
+        buildScroll = findViewById(R.id.buildScroll);
         matchesScroll = findViewById(R.id.matchesScroll);
         summonerName = findViewById(R.id.summonerName);
         summonerLvl = findViewById(R.id.summonerLevel);
@@ -144,12 +150,15 @@ public class statScreen extends AppCompatActivity {
         System.out.println("-----------------" + id);
 
 
+        buildsList = new ArrayList<build>();
+        ArrayList<String> buildTitles = new ArrayList<>();
         if (game.equals("tft")){
             tftBtn.setAlpha(0.75f);
             lolBtn.setAlpha(0.3f);
             background.setImageResource(R.drawable.tftbackground);
             background.setScaleType(ImageView.ScaleType.FIT_XY);
             setInitialInvisibility();
+
             database = FirebaseDatabase.getInstance();
             dbRef = database.getReference("builds");
 
@@ -157,25 +166,36 @@ public class statScreen extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-
                     for(DataSnapshot item: dataSnapshot.getChildren()){
-//                        Log.d("TAG","Value is " + item.child("champions").getValue().toString() );
-//                        Log.d("TAG","Value is " + item.child("synergies").getValue().toString() );
-                        Log.d("TAG","Value is " + item.child("name").getValue().toString());
+                        String name = item.child("name").getValue().toString();
+                        buildTitles.add(name);
+                        Log.d("TAG","Value is " + name );
                         String temp = item.child("champions").toString();
+                        Log.d("TAG","Value is " + temp);
                         String champions = temp.substring(1,temp.length()-2);
 
-                        List<String> champs = Arrays.asList(champions.split(","));
+                        champs = Arrays.asList(champions.split(","));
 
                         String tmp = item.child("synergies").toString();
+                        Log.d("TAG","Value is " + tmp);
                         String synergies = tmp.substring(1,tmp.length()-2);
 
-                        List<String> syns = Arrays.asList(synergies.split(","));
+                        syns = Arrays.asList(synergies.split(","));
+
+                        int[] imgid = new int[champs.size()];
+                        for (int i = 0; i < champs.size(); i++) {
+                            imgid[i] = getResources().getIdentifier(champs.get(i).replace("'", "").toLowerCase(), "drawable", getPackageName());
+                            System.out.println(imgid[i]);
+                        }
+                        buildsList.add(new build(name,champs, syns,imgid));
 
 
 
                     }
-
+                    Log.d("Stat screen","adding adapter" );
+                    ArrayAdapter adapter = new ArrayAdapter(statScreen.this,android.R.layout.simple_list_item_1, buildTitles);
+//                    BuildListAdapter adapter = new BuildListAdapter(statScreen.this, buildsList);
+                    build_List.setAdapter(adapter);
                 }
 
                 @Override
@@ -183,6 +203,8 @@ public class statScreen extends AppCompatActivity {
                     Log.w("TAG", "Failed to read value", databaseError.toException());
                 }
             });
+
+
         }
         else if (game.equals("lol")) {
             lolBtn.setAlpha(0.75f);
@@ -231,11 +253,14 @@ public class statScreen extends AppCompatActivity {
 
                 if(game.equals("lol")) {
                     homeList.setVisibility(View.VISIBLE);
+                    build_List.setVisibility(View.GONE);
                     String APICall = "https://na1.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=" + APIKey;
                     new RetrieveFreeChampions().execute(APICall);
                 }
                 else if (game.equals("tft")) {
                     homeList.setVisibility(View.INVISIBLE);
+                    build_List.setVisibility(View.VISIBLE);
+
                 }
 
             }
@@ -363,6 +388,7 @@ public class statScreen extends AppCompatActivity {
                 try {
                     if(game.equals("lol")) {
                         homeScroll.setVisibility(View.INVISIBLE);
+                        buildScroll.setVisibility(View.GONE);
                         ldrScroll.setVisibility(View.GONE);
                         matchesScroll.setVisibility(View.VISIBLE);
                         statTop.setVisibility(View.VISIBLE);
@@ -474,7 +500,8 @@ public class statScreen extends AppCompatActivity {
                     }
 
                     else if (game.equals("tft")) {
-                        homeScroll.setVisibility(View.INVISIBLE);
+                        homeScroll.setVisibility(View.GONE);
+                        buildScroll.setVisibility(View.VISIBLE);
                         ldrScroll.setVisibility(View.GONE);
                         matchesScroll.setVisibility(View.VISIBLE);
                         statTop.setVisibility(View.VISIBLE);
@@ -976,7 +1003,6 @@ public class statScreen extends AppCompatActivity {
 
         protected void onPostExecute(JSONObject json) throws NullPointerException{
 
-
             statTop.setVisibility(View.INVISIBLE);
             soloLayout.setVisibility(View.INVISIBLE);
             flexLayout.setVisibility(View.INVISIBLE);
@@ -1043,7 +1069,8 @@ public class statScreen extends AppCompatActivity {
     public void setInitialInvisibility(){
         if(game.equals("tft")) {
             ldrScroll.setVisibility(View.GONE);
-            homeScroll.setVisibility(View.INVISIBLE);
+            homeScroll.setVisibility(View.GONE);
+            buildScroll.setVisibility(View.VISIBLE);
             statTop.setVisibility(View.INVISIBLE);
             soloLayout.setVisibility(View.INVISIBLE);
             flexLayout.setVisibility(View.INVISIBLE);
@@ -1051,6 +1078,7 @@ public class statScreen extends AppCompatActivity {
         }
         else if(game.equals("lol")) {
             homeScroll.setVisibility(View.VISIBLE);
+            buildScroll.setVisibility(View.GONE);
             ldrScroll.setVisibility(View.GONE);
             matchesScroll.setVisibility(View.GONE);
             statTop.setVisibility(View.INVISIBLE);

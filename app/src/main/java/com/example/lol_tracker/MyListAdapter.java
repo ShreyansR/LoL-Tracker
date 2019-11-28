@@ -17,7 +17,6 @@ public class MyListAdapter extends ArrayAdapter<String>  {
 
     public MyListAdapter(Activity context, String[] maintitle, Integer[] imgid) {
         super(context, R.layout.row_item, maintitle);
-        // TODO Auto-generated constructor stub
 
         this.context=context;
         this.maintitle=maintitle;
