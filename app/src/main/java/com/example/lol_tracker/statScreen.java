@@ -160,8 +160,6 @@ public class statScreen extends AppCompatActivity {
             setInitialInvisibility();
             showstats();
 
-
-
         }
         else if (game.equals("lol")) {
             lolBtn.setAlpha(0.75f);
@@ -215,7 +213,13 @@ public class statScreen extends AppCompatActivity {
                     new RetrieveFreeChampions().execute(APICall);
                 }
                 else if (game.equals("tft")) {
-                    homeList.setVisibility(View.INVISIBLE);
+                    showstats();
+                    statTop.setVisibility(View.INVISIBLE);
+                    soloLayout.setVisibility(View.INVISIBLE);
+                    flexLayout.setVisibility(View.INVISIBLE);
+                    matchesScroll.setVisibility(View.GONE);
+                    ldrScroll.setVisibility(View.GONE);
+                    homeScroll.setVisibility(View.GONE);
                     build_List.setVisibility(View.VISIBLE);
 
                 }
@@ -238,6 +242,8 @@ public class statScreen extends AppCompatActivity {
                     new RetrieveJSONArrayTask().execute(APICall);
                 }
                 else if (game.equals("tft")){
+                    buildScroll.setVisibility(View.GONE);
+                    build_List.setVisibility(View.GONE);
                     textView.setText("");
                     rankSolo.setText("");
                     summonerName.setText("Summoner: " + name);
@@ -277,6 +283,10 @@ public class statScreen extends AppCompatActivity {
                 }
 
                 else if (game.equals("tft")) {
+                    buildScroll.setVisibility(View.GONE);
+                    build_List.setVisibility(View.GONE);
+                    buildScroll.setVisibility(View.GONE);
+                    build_List.setVisibility(View.GONE);
                     String APICall = "https://na1.api.riotgames.com/tft/league/v1/entries/PLATINUM/I?page=1&api_key=" + APIKey;
                     new RetrieveLeaderboard().execute(APICall);
                 }
@@ -618,6 +628,21 @@ public class statScreen extends AppCompatActivity {
                     String APICall = "https://americas.api.riotgames.com/tft/match/v1/matches/" + gameId + "?api_key=" + APIKey;
                     new RetrieveMatch1().execute(APICall);
 
+                    gameId = json.get(1).toString();
+
+                    APICall = "https://americas.api.riotgames.com/tft/match/v1/matches/" + gameId + "?api_key=" + APIKey;
+                    new RetrieveMatch2().execute(APICall);
+
+                    gameId = json.get(2).toString();
+
+                    APICall = "https://americas.api.riotgames.com/tft/match/v1/matches/" + gameId + "?api_key=" + APIKey;
+                    new RetrieveMatch3().execute(APICall);
+
+                    gameId = json.get(4).toString();
+
+                    APICall = "https://americas.api.riotgames.com/tft/match/v1/matches/" + gameId + "?api_key=" + APIKey;
+                    new RetrieveMatch4().execute(APICall);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -766,8 +791,11 @@ public class statScreen extends AppCompatActivity {
                         for (int i = 0; i < jsonArr.length(); i++) {
                             JSONObject player = jsonArr.getJSONObject(i);
                             if (puuid.equals(player.get("puuid"))) {
-                                matchChamp1.setText(player.getJSONObject("companion").get("species").toString());
-                                System.out.println(player.getJSONObject("companion").get("species").toString());
+                                matchImg1.setImageResource(R.color.cardview_light_background);
+                                matchChamp1.setText("Place: " + player.get("placement").toString());
+                                matchLane1.setText("Level: " + player.get("level").toString());
+                                matchKills1.setText("Kills: " + player.get("players_eliminated").toString());
+                                matchDeaths1.setText("Damage: " + player.get("total_damage_to_players").toString());
                             }
                         }
                     } catch (JSONException e) {
@@ -793,36 +821,66 @@ public class statScreen extends AppCompatActivity {
             if (json == null) {
                 Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
             } else {
-                try {
-                    Integer participantId = null;
-                    Integer kills;
-                    Integer deaths;
-                    Integer assists;
-                    Integer champLevel;
-                    Boolean win;
-                    JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject player = jsonArray.getJSONObject(i);
-                        if(accountId.equals(player.getJSONObject("player").get("accountId"))) {
-                            participantId = (Integer) player.get("participantId");
+                if (game.equals("lol")) {
+                    try {
+                        Integer participantId = null;
+                        Integer kills;
+                        Integer deaths;
+                        Integer assists;
+                        Integer champLevel;
+                        Boolean win;
+                        JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject player = jsonArray.getJSONObject(i);
+                            if (accountId.equals(player.getJSONObject("player").get("accountId"))) {
+                                participantId = (Integer) player.get("participantId");
+                            }
                         }
-                    }
-                    jsonArray = (JSONArray) json.get("participants");
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject player = jsonArray.getJSONObject(i);
-                        if(participantId == (Integer) player.get("participantId")) {
-                            JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
-                            kills = (Integer) statsObject.get("kills");
-                            deaths = (Integer) statsObject.get("deaths");
-                            assists = (Integer) statsObject.get("assists");
-                            champLevel = (Integer) statsObject.get("champLevel");
-                            win = (Boolean) statsObject.get("win");
-                            matchKills2.setText(String.valueOf("Kills: " + kills));
-                            matchDeaths2.setText(String.valueOf("Deaths: " + deaths));
+                        jsonArray = (JSONArray) json.get("participants");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject player = jsonArray.getJSONObject(i);
+                            if (participantId == (Integer) player.get("participantId")) {
+                                JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
+                                kills = (Integer) statsObject.get("kills");
+                                deaths = (Integer) statsObject.get("deaths");
+                                assists = (Integer) statsObject.get("assists");
+                                champLevel = (Integer) statsObject.get("champLevel");
+                                win = (Boolean) statsObject.get("win");
+                                matchKills2.setText(String.valueOf("Kills: " + kills));
+                                matchDeaths2.setText(String.valueOf("Deaths: " + deaths));
+                            }
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                }
+
+                else if (game.equals("tft")) {
+                    try {
+                        Integer participantId = null;
+                        Integer kills;
+                        Integer deaths;
+                        Integer assists;
+                        Integer champLevel;
+                        Boolean win;
+                        JSONObject jsonObject = json.getJSONObject("info");
+                        JSONArray jsonArr = jsonObject.getJSONArray("participants");
+                        System.out.println(jsonArr);
+
+
+                        for (int i = 0; i < jsonArr.length(); i++) {
+                            JSONObject player = jsonArr.getJSONObject(i);
+                            if (puuid.equals(player.get("puuid"))) {
+                                matchImg2.setImageResource(R.color.cardview_light_background);
+                                matchChamp2.setText("Place: " + player.get("placement").toString());
+                                matchLane2.setText("Level: " + player.get("level").toString());
+                                matchKills2.setText("Kills: " + player.get("players_eliminated").toString());
+                                matchDeaths2.setText("Damage: " + player.get("total_damage_to_players").toString());
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -843,36 +901,66 @@ public class statScreen extends AppCompatActivity {
             if (json == null) {
                 Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
             } else {
-                try {
-                    Integer participantId = null;
-                    Integer kills;
-                    Integer deaths;
-                    Integer assists;
-                    Integer champLevel;
-                    Boolean win;
-                    JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject player = jsonArray.getJSONObject(i);
-                        if(accountId.equals(player.getJSONObject("player").get("accountId"))) {
-                            participantId = (Integer) player.get("participantId");
+                if (game.equals("lol")) {
+                    try {
+                        Integer participantId = null;
+                        Integer kills;
+                        Integer deaths;
+                        Integer assists;
+                        Integer champLevel;
+                        Boolean win;
+                        JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject player = jsonArray.getJSONObject(i);
+                            if (accountId.equals(player.getJSONObject("player").get("accountId"))) {
+                                participantId = (Integer) player.get("participantId");
+                            }
                         }
-                    }
-                    jsonArray = (JSONArray) json.get("participants");
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject player = jsonArray.getJSONObject(i);
-                        if(participantId == (Integer) player.get("participantId")) {
-                            JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
-                            kills = (Integer) statsObject.get("kills");
-                            deaths = (Integer) statsObject.get("deaths");
-                            assists = (Integer) statsObject.get("assists");
-                            champLevel = (Integer) statsObject.get("champLevel");
-                            win = (Boolean) statsObject.get("win");
-                            matchKills3.setText(String.valueOf("Kills: " + kills));
-                            matchDeaths3.setText(String.valueOf("Deaths: " + deaths));
+                        jsonArray = (JSONArray) json.get("participants");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject player = jsonArray.getJSONObject(i);
+                            if (participantId == (Integer) player.get("participantId")) {
+                                JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
+                                kills = (Integer) statsObject.get("kills");
+                                deaths = (Integer) statsObject.get("deaths");
+                                assists = (Integer) statsObject.get("assists");
+                                champLevel = (Integer) statsObject.get("champLevel");
+                                win = (Boolean) statsObject.get("win");
+                                matchKills3.setText(String.valueOf("Kills: " + kills));
+                                matchDeaths3.setText(String.valueOf("Deaths: " + deaths));
+                            }
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                }
+
+                else if (game.equals("tft")) {
+                    try {
+                        Integer participantId = null;
+                        Integer kills;
+                        Integer deaths;
+                        Integer assists;
+                        Integer champLevel;
+                        Boolean win;
+                        JSONObject jsonObject = json.getJSONObject("info");
+                        JSONArray jsonArr = jsonObject.getJSONArray("participants");
+                        System.out.println(jsonArr);
+
+
+                        for (int i = 0; i < jsonArr.length(); i++) {
+                            JSONObject player = jsonArr.getJSONObject(i);
+                            if (puuid.equals(player.get("puuid"))) {
+                                matchImg3.setImageResource(R.color.cardview_light_background);
+                                matchChamp3.setText("Place: " + player.get("placement").toString());
+                                matchLane3.setText("Level: " + player.get("level").toString());
+                                matchKills3.setText("Kills: " + player.get("players_eliminated").toString());
+                                matchDeaths3.setText("Damage: " + player.get("total_damage_to_players").toString());
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -893,36 +981,66 @@ public class statScreen extends AppCompatActivity {
             if (json == null) {
                 Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
             } else {
-                try {
-                    Integer participantId = null;
-                    Integer kills;
-                    Integer deaths;
-                    Integer assists;
-                    Integer champLevel;
-                    Boolean win;
-                    JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject player = jsonArray.getJSONObject(i);
-                        if(accountId.equals(player.getJSONObject("player").get("accountId"))) {
-                            participantId = (Integer) player.get("participantId");
+                if (game.equals("lol")) {
+                    try {
+                        Integer participantId = null;
+                        Integer kills;
+                        Integer deaths;
+                        Integer assists;
+                        Integer champLevel;
+                        Boolean win;
+                        JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject player = jsonArray.getJSONObject(i);
+                            if (accountId.equals(player.getJSONObject("player").get("accountId"))) {
+                                participantId = (Integer) player.get("participantId");
+                            }
                         }
-                    }
-                    jsonArray = (JSONArray) json.get("participants");
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject player = jsonArray.getJSONObject(i);
-                        if(participantId == (Integer) player.get("participantId")) {
-                            JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
-                            kills = (Integer) statsObject.get("kills");
-                            deaths = (Integer) statsObject.get("deaths");
-                            assists = (Integer) statsObject.get("assists");
-                            champLevel = (Integer) statsObject.get("champLevel");
-                            win = (Boolean) statsObject.get("win");
-                            matchKills4.setText(String.valueOf("Kills: " + kills));
-                            matchDeaths4.setText(String.valueOf("Deaths: " + deaths));
+                        jsonArray = (JSONArray) json.get("participants");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject player = jsonArray.getJSONObject(i);
+                            if (participantId == (Integer) player.get("participantId")) {
+                                JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
+                                kills = (Integer) statsObject.get("kills");
+                                deaths = (Integer) statsObject.get("deaths");
+                                assists = (Integer) statsObject.get("assists");
+                                champLevel = (Integer) statsObject.get("champLevel");
+                                win = (Boolean) statsObject.get("win");
+                                matchKills4.setText(String.valueOf("Kills: " + kills));
+                                matchDeaths4.setText(String.valueOf("Deaths: " + deaths));
+                            }
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                }
+
+                else if (game.equals("tft")) {
+                    try {
+                        Integer participantId = null;
+                        Integer kills;
+                        Integer deaths;
+                        Integer assists;
+                        Integer champLevel;
+                        Boolean win;
+                        JSONObject jsonObject = json.getJSONObject("info");
+                        JSONArray jsonArr = jsonObject.getJSONArray("participants");
+                        System.out.println(jsonArr);
+
+
+                        for (int i = 0; i < jsonArr.length(); i++) {
+                            JSONObject player = jsonArr.getJSONObject(i);
+                            if (puuid.equals(player.get("puuid"))) {
+                                matchImg4.setImageResource(R.color.cardview_light_background);
+                                matchChamp4.setText("Place: " + player.get("placement").toString());
+                                matchLane4.setText("Level: " + player.get("level").toString());
+                                matchKills4.setText("Kills: " + player.get("players_eliminated").toString());
+                                matchDeaths4.setText("Damage: " + player.get("total_damage_to_players").toString());
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -1093,6 +1211,7 @@ public class statScreen extends AppCompatActivity {
             ldrScroll.setVisibility(View.GONE);
             homeScroll.setVisibility(View.GONE);
             buildScroll.setVisibility(View.VISIBLE);
+            build_List.setVisibility(View.VISIBLE);
             statTop.setVisibility(View.INVISIBLE);
             soloLayout.setVisibility(View.INVISIBLE);
             flexLayout.setVisibility(View.INVISIBLE);
