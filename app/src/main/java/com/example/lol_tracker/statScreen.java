@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -151,58 +152,14 @@ public class statScreen extends AppCompatActivity {
 
 
         buildsList = new ArrayList<build>();
-        ArrayList<String> buildTitles = new ArrayList<>();
         if (game.equals("tft")){
             tftBtn.setAlpha(0.75f);
             lolBtn.setAlpha(0.3f);
             background.setImageResource(R.drawable.tftbackground);
             background.setScaleType(ImageView.ScaleType.FIT_XY);
             setInitialInvisibility();
+            showstats();
 
-            database = FirebaseDatabase.getInstance();
-            dbRef = database.getReference("builds");
-
-            dbRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    for(DataSnapshot item: dataSnapshot.getChildren()){
-                        String name = item.child("name").getValue().toString();
-                        buildTitles.add(name);
-                        Log.d("TAG","Value is " + name );
-                        String temp = item.child("champions").toString();
-                        Log.d("TAG","Value is " + temp);
-                        String champions = temp.substring(1,temp.length()-2);
-
-                        champs = Arrays.asList(champions.split(","));
-
-                        String tmp = item.child("synergies").toString();
-                        Log.d("TAG","Value is " + tmp);
-                        String synergies = tmp.substring(1,tmp.length()-2);
-
-                        syns = Arrays.asList(synergies.split(","));
-
-                        int[] imgid = new int[champs.size()];
-                        for (int i = 0; i < champs.size(); i++) {
-                            imgid[i] = getResources().getIdentifier(champs.get(i).replace("'", "").toLowerCase(), "drawable", getPackageName());
-                            System.out.println(imgid[i]);
-                        }
-                        buildsList.add(new build(name,champs, syns,imgid));
-
-
-
-                    }
-                    Log.d("Stat screen","adding adapter" );
-                    ArrayAdapter adapter = new ArrayAdapter(statScreen.this,android.R.layout.simple_list_item_1, buildTitles);
-//                    BuildListAdapter adapter = new BuildListAdapter(statScreen.this, buildsList);
-                    build_List.setAdapter(adapter);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.w("TAG", "Failed to read value", databaseError.toException());
-                }
-            });
 
 
         }
@@ -332,6 +289,71 @@ public class statScreen extends AppCompatActivity {
                 resetBottomTabs(0.25f, 0.25f,0.25f, 0.25f, 0.7f);
             }
         });
+    }
+
+    public void showstats() {
+
+        ArrayList<String> buildTitles = new ArrayList<>();
+
+        database = FirebaseDatabase.getInstance();
+        dbRef = database.getReference("builds");
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot item: dataSnapshot.getChildren()){
+                    String name = item.child("name").getValue().toString();
+                    buildTitles.add(name);
+
+
+                    String temp = item.child("champions").getValue().toString();
+                    System.out.println("temp: " + temp.split(",").toString());
+//                        Log.d("TAG","Value is " + temp);
+                    String champions = temp.substring(1,temp.length()-1);
+                    System.out.println("champoins" + champions);
+
+                    champs = Arrays.asList(champions.split(", "));
+
+                    String tmp = item.child("synergies").getValue().toString();
+                    Log.d("TAG","Value is " + tmp);
+                    String synergies = tmp.substring(1,tmp.length()-2);
+
+                    syns = Arrays.asList(synergies.split(", "));
+
+                    int[] imgid = new int[champs.size()];
+                    for (int i = 0; i < champs.size(); i++) {
+                        System.out.println(champs.get(i));
+                        imgid[i] = getResources().getIdentifier(champs.get(i).replace("’", "").replace(" ","").toLowerCase(), "drawable", getPackageName());
+                        System.out.println(imgid[i]);
+                    }
+                    buildsList.add(new build(name,champs, syns,imgid));
+
+
+
+                }
+                Log.d("Stat screen","adding adapter" );
+                ArrayAdapter adapter = new ArrayAdapter(statScreen.this,android.R.layout.simple_list_item_1, buildTitles);
+                build_List.setAdapter(adapter);
+                build_List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        build build_temp = buildsList.get(i);
+
+                        Intent intent = new Intent(statScreen.this , BuildDetails.class );
+                        intent.putExtra("build",build_temp);
+                        startActivity(intent);
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("TAG", "Failed to read value", databaseError.toException());
+            }
+        });
+
     }
 
     //creates JSON objects after getting data from URL

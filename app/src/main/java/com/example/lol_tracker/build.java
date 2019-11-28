@@ -2,9 +2,10 @@ package com.example.lol_tracker;
 
 import android.content.Intent;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class build {
+public class build implements Serializable {
     String name;
     List <String> champions;
     List <String> synergy;
