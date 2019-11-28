@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -45,13 +46,7 @@ public class statScreen extends AppCompatActivity {
 
     FirebaseDatabase database;
     DatabaseReference dbRef;
-    ImageButton tftBtn;
-    ImageButton lolBtn;
-    ImageButton homeBtn;
-    ImageButton searchBtn;
-    ImageButton statsBtn;
-    ImageButton leaderboardBtn;
-    ImageButton settingsBtn;
+    ImageButton tftBtn, lolBtn, homeBtn, searchBtn, statsBtn, leaderboardBtn, settingsBtn;
     ListView ldrBoardList;
     ListView homeList;
     Intent intent;
@@ -65,10 +60,23 @@ public class statScreen extends AppCompatActivity {
     String APIKey;
     ImageView background;
     TextView textView;
-    TextView textView2;
-    TextView textView3;
+    TextView rankSolo;
+    TextView rankFlex;
     ScrollView ldrScroll;
     ScrollView homeScroll;
+    ScrollView matchesScroll;
+    TextView summonerName;
+    LinearLayout statTop;
+    LinearLayout soloLayout;
+    LinearLayout flexLayout;
+    TextView summonerLvl;
+    ImageView soloPic;
+    ImageView flexPic;
+    ImageView matchImg1, matchImg2, matchImg3, matchImg4;
+    TextView matchChamp1, matchChamp2, matchChamp3, matchChamp4;
+    TextView matchLane1, matchLane2, matchLane3, matchLane4;
+    TextView matchKills1, matchKills2, matchKills3, matchKills4;
+    TextView matchDeaths1, matchDeaths2, matchDeaths3, matchDeaths4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +87,9 @@ public class statScreen extends AppCompatActivity {
         tftBtn = findViewById(R.id.tftBtn);
         lolBtn = findViewById(R.id.lolBtn);
         background = findViewById(R.id.statBackground);
-        textView = findViewById(R.id.textView);
-        textView2 = findViewById(R.id.textView2);
-        textView3 = findViewById(R.id.textView3);
+        textView = findViewById(R.id.summonerName);
+        rankSolo = findViewById(R.id.rankSolo);
+        rankFlex = findViewById(R.id.rankFlex);
         homeBtn = findViewById(R.id.homeBtn);
         statsBtn = findViewById(R.id.statsBtn);
         searchBtn = findViewById(R.id.searchBtn);
@@ -91,7 +99,37 @@ public class statScreen extends AppCompatActivity {
         homeList = findViewById(R.id.champsList);
         ldrScroll = findViewById(R.id.ldrScroll);
         homeScroll = findViewById(R.id.homeScroll);
+        matchesScroll = findViewById(R.id.matchesScroll);
+        summonerName = findViewById(R.id.summonerName);
+        summonerLvl = findViewById(R.id.summonerLevel);
+        statTop = findViewById(R.id.statTop);
+        soloLayout = findViewById(R.id.soloLayout);
+        flexLayout = findViewById(R.id.flexLayout);
+        soloPic = findViewById(R.id.soloPic);
+        flexPic = findViewById(R.id.flexPic);
+        matchImg1 = findViewById(R.id.matchImg1);
+        matchChamp1 = findViewById(R.id.matchChamp1);
+        matchLane1 = findViewById(R.id.matchLane1);
+        matchKills1 = findViewById(R.id.matchKills1);
+        matchDeaths1 = findViewById(R.id.matchDeaths1);
 
+        matchImg2 = findViewById(R.id.matchImg2);
+        matchChamp2 = findViewById(R.id.matchChamp2);
+        matchLane2 = findViewById(R.id.matchLane2);
+        matchKills2 = findViewById(R.id.matchKills2);
+        matchDeaths2 = findViewById(R.id.matchDeaths2);
+
+        matchImg3 = findViewById(R.id.matchImg3);
+        matchChamp3 = findViewById(R.id.matchChamp3);
+        matchLane3 = findViewById(R.id.matchLane3);
+        matchKills3 = findViewById(R.id.matchKills3);
+        matchDeaths3 = findViewById(R.id.matchDeaths3);
+
+        matchImg4 = findViewById(R.id.matchImg4);
+        matchChamp4 = findViewById(R.id.matchChamp4);
+        matchLane4 = findViewById(R.id.matchLane4);
+        matchKills4 = findViewById(R.id.matchKills4);
+        matchDeaths4 = findViewById(R.id.matchDeaths4);
 
         intent = getIntent();
         game = intent.getStringExtra("game");
@@ -103,7 +141,7 @@ public class statScreen extends AppCompatActivity {
         revisionDate = intent.getLongExtra("revisionDate", 0);
         APIKey = intent.getStringExtra("APIKey");
 
-
+        System.out.println("-----------------" + id);
 
 
         if (game.equals("tft")){
@@ -210,13 +248,20 @@ public class statScreen extends AppCompatActivity {
 
                 if(game.equals("lol")) {
                     textView.setText("");
-                    textView2.setText("");
-                    textView.setText("Name: " + name + "\nSummoner Level: " + summonerLevel);
+                    rankSolo.setText("");
+                    //textView.setText("Name: " + name + "\nSummoner Level: " + summonerLevel);
+                    summonerName.setText("Summoner: " + name);
+                    summonerLvl.setText("Level: " + summonerLevel);
                     String APICall = "https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + id + "?api_key=" + APIKey;
                     new RetrieveJSONArrayTask().execute(APICall);
                 }
                 else if (game.equals("tft")){
-                    setInitialInvisibility();
+                    textView.setText("");
+                    rankSolo.setText("");
+                    summonerName.setText("Summoner: " + name);
+                    summonerLvl.setText("Level: " + summonerLevel);
+                    String APICall = "https://na1.api.riotgames.com/tft/league/v1/entries/by-summoner/" + id + "?api_key=" + APIKey;
+                    new RetrieveJSONArrayTask().execute(APICall);
                 }
             }
         });
@@ -317,39 +362,515 @@ public class statScreen extends AppCompatActivity {
             } else {
                 try {
                     if(game.equals("lol")) {
-                        textView.setVisibility(View.VISIBLE);
-                        textView2.setVisibility(View.VISIBLE);
-                        textView3.setVisibility(View.VISIBLE);
+                        homeScroll.setVisibility(View.INVISIBLE);
                         ldrScroll.setVisibility(View.GONE);
-                        homeScroll.setVisibility(View.GONE);
-                        JSONObject jsonObject = json.getJSONObject(0);
+                        matchesScroll.setVisibility(View.VISIBLE);
+                        statTop.setVisibility(View.VISIBLE);
+                        soloLayout.setVisibility(View.VISIBLE);
+                        flexLayout.setVisibility(View.VISIBLE);
 
-                        String queueType = (String) jsonObject.get("queueType");
-                        Integer wins = (Integer) jsonObject.get("wins");
-                        Integer losses = (Integer) jsonObject.get("losses");
-                        String rank = (String) jsonObject.get("rank");
-                        String tier = (String) jsonObject.get("tier");
-                        Integer leaguePoints = (Integer) jsonObject.get("leaguePoints");
-                        textView2.setText("Queue Type: " + queueType
-                                + "\nWins: " + wins
-                                + "\nLosses: " + losses
-                                + "\nRank: " + rank
-                                + " " + tier
-                                + "\nLeague Points: " + leaguePoints);
+                        rankSolo.setText("RANKED SOLO 5x5"
+                                + "\nWins: " + "N/A"
+                                + "\nLosses: " + "N/A"
+                                + "\nRank: " + "UNRANKED "
+                                + "\nLeague Points: " + "N/A");
 
-                        jsonObject = json.getJSONObject(1);
-                        queueType = (String) jsonObject.get("queueType");
-                        wins = (Integer) jsonObject.get("wins");
-                        losses = (Integer) jsonObject.get("losses");
-                        rank = (String) jsonObject.get("rank");
-                        tier = (String) jsonObject.get("tier");
-                        leaguePoints = (Integer) jsonObject.get("leaguePoints");
-                        textView3.setText("Queue Type: " + queueType
-                                + "\nWins: " + wins
-                                + "\nLosses: " + losses
-                                + "\nRank: " + rank
-                                + " " + tier
-                                + "\nLeague Points: " + leaguePoints);
+                        rankFlex.setText("RANKED FLEX SR"
+                                + "\nWins: " + "N/A"
+                                + "\nLosses: " + "N/A"
+                                + "\nRank: " + "UNRANKED "
+                                + "\nLeague Points: " + "N/A");
+
+                        for(int i = 0; i < json.length(); i++) {
+                            JSONObject jsonObject = json.getJSONObject(i);
+                            String queueType = (String) jsonObject.get("queueType");
+                            Integer wins = (Integer) jsonObject.get("wins");
+                            Integer losses = (Integer) jsonObject.get("losses");
+                            String rank = (String) jsonObject.get("rank");
+                            String tier = (String) jsonObject.get("tier");
+                            Integer leaguePoints = (Integer) jsonObject.get("leaguePoints");
+
+                            System.out.println(queueType);
+                            if(queueType.equals("RANKED_SOLO_5x5")) {
+
+                                if (tier.equals("BRONZE")){
+                                    soloPic.setImageResource(R.drawable.bronze);
+                                }
+                                if (tier.equals("CHALLENGER")){
+                                    soloPic.setImageResource(R.drawable.challenger);
+                                }
+                                if (tier.equals("DIAMOND")){
+                                    soloPic.setImageResource(R.drawable.diamond);
+                                }
+                                if (tier.equals("GOLD")){
+                                    soloPic.setImageResource(R.drawable.gold);
+                                }
+                                if (tier.equals("GRANDMASTER")){
+                                    soloPic.setImageResource(R.drawable.grandmaster);
+                                }
+                                if (tier.equals("IRON")){
+                                    soloPic.setImageResource(R.drawable.iron);
+                                }
+                                if (tier.equals("MASTER")){
+                                    soloPic.setImageResource(R.drawable.master);
+                                }
+                                if (tier.equals("PLATINUM")){
+                                    soloPic.setImageResource(R.drawable.platinum);
+                                }
+                                if (tier.equals("SILVER")){
+                                    soloPic.setImageResource(R.drawable.silver);
+                                }
+
+                                rankSolo.setText(queueType.replace("_", " ")
+                                        + "\nWins: " + wins
+                                        + "\nLosses: " + losses
+                                        + "\nRank: " + tier
+                                        + " " + rank
+                                        + "\nLeague Points: " + leaguePoints);
+                            }
+
+                            else if(queueType.equals("RANKED_FLEX_SR")) {
+
+                                if (tier.equals("BRONZE")){
+                                    flexPic.setImageResource(R.drawable.bronze);
+                                }
+                                if (tier.equals("CHALLENGER")){
+                                    flexPic.setImageResource(R.drawable.challenger);
+                                }
+                                if (tier.equals("DIAMOND")){
+                                    flexPic.setImageResource(R.drawable.diamond);
+                                }
+                                if (tier.equals("GOLD")){
+                                    flexPic.setImageResource(R.drawable.gold);
+                                }
+                                if (tier.equals("GRANDMASTER")){
+                                    flexPic.setImageResource(R.drawable.grandmaster);
+                                }
+                                if (tier.equals("IRON")){
+                                    flexPic.setImageResource(R.drawable.iron);
+                                }
+                                if (tier.equals("MASTER")){
+                                    flexPic.setImageResource(R.drawable.master);
+                                }
+                                if (tier.equals("PLATINUM")){
+                                    flexPic.setImageResource(R.drawable.platinum);
+                                }
+                                if (tier.equals("SILVER")){
+                                    flexPic.setImageResource(R.drawable.silver);
+                                }
+
+                                rankFlex.setText(queueType.replace("_", " ")
+                                        + "\nWins: " + wins
+                                        + "\nLosses: " + losses
+                                        + "\nRank: " + tier
+                                        + " " + rank
+                                        + "\nLeague Points: " + leaguePoints);
+                            }
+
+                            String APICall = "https://na1.api.riotgames.com/lol/match/v4/matchlists/by-account/" + accountId + "?api_key=" + APIKey;
+                            new RetrieveMatchList().execute(APICall);
+                        }
+
+                    }
+
+                    else if (game.equals("tft")) {
+                        homeScroll.setVisibility(View.INVISIBLE);
+                        ldrScroll.setVisibility(View.GONE);
+                        matchesScroll.setVisibility(View.VISIBLE);
+                        statTop.setVisibility(View.VISIBLE);
+                        soloLayout.setVisibility(View.VISIBLE);
+                        flexLayout.setVisibility(View.INVISIBLE);
+
+                        rankSolo.setText("RANKED TFT"
+                                + "\nWins: " + "N/A"
+                                + "\nLosses: " + "N/A"
+                                + "\nRank: " + "UNRANKED "
+                                + "\nLeague Points: " + "N/A");
+
+
+                        for(int i = 0; i < json.length(); i++) {
+                            JSONObject jsonObject = json.getJSONObject(i);
+                            String queueType = (String) jsonObject.get("queueType");
+                            Integer wins = (Integer) jsonObject.get("wins");
+                            Integer losses = (Integer) jsonObject.get("losses");
+                            String rank = (String) jsonObject.get("rank");
+                            String tier = (String) jsonObject.get("tier");
+                            Integer leaguePoints = (Integer) jsonObject.get("leaguePoints");
+
+                            System.out.println(queueType);
+                            if(queueType.equals("RANKED_TFT")) {
+
+                                if (tier.equals("BRONZE")){
+                                    soloPic.setImageResource(R.drawable.bronze);
+                                }
+                                if (tier.equals("CHALLENGER")){
+                                    soloPic.setImageResource(R.drawable.challenger);
+                                }
+                                if (tier.equals("DIAMOND")){
+                                    soloPic.setImageResource(R.drawable.diamond);
+                                }
+                                if (tier.equals("GOLD")){
+                                    soloPic.setImageResource(R.drawable.gold);
+                                }
+                                if (tier.equals("GRANDMASTER")){
+                                    soloPic.setImageResource(R.drawable.grandmaster);
+                                }
+                                if (tier.equals("IRON")){
+                                    soloPic.setImageResource(R.drawable.iron);
+                                }
+                                if (tier.equals("MASTER")){
+                                    soloPic.setImageResource(R.drawable.master);
+                                }
+                                if (tier.equals("PLATINUM")){
+                                    soloPic.setImageResource(R.drawable.platinum);
+                                }
+                                if (tier.equals("SILVER")){
+                                    soloPic.setImageResource(R.drawable.silver);
+                                }
+
+                                rankSolo.setText(queueType.replace("_", " ")
+                                        + "\nWins: " + wins
+                                        + "\nLosses: " + losses
+                                        + "\nRank: " + tier
+                                        + " " + rank
+                                        + "\nLeague Points: " + leaguePoints);
+                            }
+
+                            String APICall = "https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/" + puuid + "/ids?count=5&api_key=" + APIKey;
+                            new RetrieveTftMatchList().execute(APICall);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    class RetrieveTftMatchList extends AsyncTask<String, Void, JSONArray> {
+        private Exception exception;
+        protected JSONArray doInBackground(String... APICall) {
+            try {
+                JSONArray json = readJsonArrayFromUrl(APICall[0]);
+                return json;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        protected void onPostExecute(JSONArray json) {
+            if (json == null) {
+                Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+
+                    String gameId = json.get(0).toString();
+
+                    String APICall = "https://americas.api.riotgames.com/tft/match/v1/matches/" + gameId + "?api_key=" + APIKey;
+                    new RetrieveMatch1().execute(APICall);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    class RetrieveMatchList extends AsyncTask<String, Void, JSONObject> {
+        private Exception exception;
+        protected JSONObject doInBackground(String... APICall) {
+            try {
+                JSONObject json = readJsonObjectFromUrl(APICall[0]);
+                return json;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        protected void onPostExecute(JSONObject json) {
+            if (json == null) {
+                Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
+            } else {
+                if (game.equals("lol")) {
+                    try {
+                        JSONArray jsonArray = (JSONArray) json.get("matches");
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+                        String lane = (String) jsonObject.get("lane");
+                        Long gameId = (Long) jsonObject.get("gameId");
+                        Integer champion = (Integer) jsonObject.get("champion");
+                        Integer queue = (Integer) jsonObject.get("queue");
+                        matchImg1.setImageResource(getResources().getIdentifier(get_name(champion).replace("'", "").toLowerCase(), "drawable", getPackageName()));
+                        matchLane1.setText("Lane: " + lane);
+                        matchChamp1.setText(get_name(champion));
+
+                        String APICall = "https://na1.api.riotgames.com/lol/match/v4/matches/" + gameId + "?api_key=" + APIKey;
+                        new RetrieveMatch1().execute(APICall);
+
+                        jsonObject = jsonArray.getJSONObject(2);
+                        lane = (String) jsonObject.get("lane");
+                        gameId = (Long) jsonObject.get("gameId");
+                        champion = (Integer) jsonObject.get("champion");
+                        queue = (Integer) jsonObject.get("queue");
+
+                        matchImg2.setImageResource(getResources().getIdentifier(get_name(champion).replace("'", "").toLowerCase(), "drawable", getPackageName()));
+                        matchLane2.setText("Lane: " + lane);
+                        matchChamp2.setText(get_name(champion));
+
+                        APICall = "https://na1.api.riotgames.com/lol/match/v4/matches/" + gameId + "?api_key=" + APIKey;
+                        new RetrieveMatch2().execute(APICall);
+
+                        jsonObject = jsonArray.getJSONObject(3);
+                        lane = (String) jsonObject.get("lane");
+                        gameId = (Long) jsonObject.get("gameId");
+                        champion = (Integer) jsonObject.get("champion");
+                        queue = (Integer) jsonObject.get("queue");
+
+                        matchImg3.setImageResource(getResources().getIdentifier(get_name(champion).replace("'", "").toLowerCase(), "drawable", getPackageName()));
+                        matchLane3.setText("Lane: " + lane);
+                        matchChamp3.setText(get_name(champion));
+
+                        APICall = "https://na1.api.riotgames.com/lol/match/v4/matches/" + gameId + "?api_key=" + APIKey;
+                        new RetrieveMatch3().execute(APICall);
+
+                        jsonObject = jsonArray.getJSONObject(4);
+                        lane = (String) jsonObject.get("lane");
+                        gameId = (Long) jsonObject.get("gameId");
+                        champion = (Integer) jsonObject.get("champion");
+                        queue = (Integer) jsonObject.get("queue");
+
+                        matchImg4.setImageResource(getResources().getIdentifier(get_name(champion).replace("'", "").toLowerCase(), "drawable", getPackageName()));
+                        matchLane4.setText("Lane: " + lane);
+                        matchChamp4.setText(get_name(champion));
+
+                        APICall = "https://na1.api.riotgames.com/lol/match/v4/matches/" + gameId + "?api_key=" + APIKey;
+                        new RetrieveMatch4().execute(APICall);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    class RetrieveMatch1 extends AsyncTask<String, Void, JSONObject> {
+        private Exception exception;
+        protected JSONObject doInBackground(String... APICall) {
+            try {
+                JSONObject json = readJsonObjectFromUrl(APICall[0]);
+                return json;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        protected void onPostExecute(JSONObject json) {
+            if (json == null) {
+                Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
+            } else {
+                if (game.equals("lol")) {
+                    try {
+                        Integer participantId = null;
+                        Integer kills;
+                        Integer deaths;
+                        Integer assists;
+                        Integer champLevel;
+                        Boolean win;
+                        JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject player = jsonArray.getJSONObject(i);
+                            if (accountId.equals(player.getJSONObject("player").get("accountId"))) {
+                                participantId = (Integer) player.get("participantId");
+                            }
+                        }
+                        jsonArray = (JSONArray) json.get("participants");
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject player = jsonArray.getJSONObject(i);
+                            if (participantId == (Integer) player.get("participantId")) {
+                                JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
+                                kills = (Integer) statsObject.get("kills");
+                                deaths = (Integer) statsObject.get("kills");
+                                assists = (Integer) statsObject.get("assists");
+                                champLevel = (Integer) statsObject.get("champLevel");
+                                win = (Boolean) statsObject.get("win");
+                                matchKills1.setText(String.valueOf("Kills: " + kills));
+                                matchDeaths1.setText(String.valueOf("Deaths: " + deaths));
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if (game.equals("tft")) {
+                    try {
+                        Integer participantId = null;
+                        Integer kills;
+                        Integer deaths;
+                        Integer assists;
+                        Integer champLevel;
+                        Boolean win;
+                        JSONObject jsonObject = json.getJSONObject("info");
+                        JSONArray jsonArr = jsonObject.getJSONArray("participants");
+                        System.out.println(jsonArr);
+
+
+                        for (int i = 0; i < jsonArr.length(); i++) {
+                            JSONObject player = jsonArr.getJSONObject(i);
+                            if (puuid.equals(player.get("puuid"))) {
+                                matchChamp1.setText(player.getJSONObject("companion").get("species").toString());
+                                System.out.println(player.getJSONObject("companion").get("species").toString());
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    class RetrieveMatch2 extends AsyncTask<String, Void, JSONObject> {
+        private Exception exception;
+        protected JSONObject doInBackground(String... APICall) {
+            try {
+                JSONObject json = readJsonObjectFromUrl(APICall[0]);
+                return json;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        protected void onPostExecute(JSONObject json) {
+            if (json == null) {
+                Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    Integer participantId = null;
+                    Integer kills;
+                    Integer deaths;
+                    Integer assists;
+                    Integer champLevel;
+                    Boolean win;
+                    JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
+                    for(int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject player = jsonArray.getJSONObject(i);
+                        if(accountId.equals(player.getJSONObject("player").get("accountId"))) {
+                            participantId = (Integer) player.get("participantId");
+                        }
+                    }
+                    jsonArray = (JSONArray) json.get("participants");
+                    for(int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject player = jsonArray.getJSONObject(i);
+                        if(participantId == (Integer) player.get("participantId")) {
+                            JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
+                            kills = (Integer) statsObject.get("kills");
+                            deaths = (Integer) statsObject.get("kills");
+                            assists = (Integer) statsObject.get("assists");
+                            champLevel = (Integer) statsObject.get("champLevel");
+                            win = (Boolean) statsObject.get("win");
+                            matchKills2.setText(String.valueOf("Kills: " + kills));
+                            matchDeaths2.setText(String.valueOf("Deaths: " + deaths));
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    class RetrieveMatch3 extends AsyncTask<String, Void, JSONObject> {
+        private Exception exception;
+        protected JSONObject doInBackground(String... APICall) {
+            try {
+                JSONObject json = readJsonObjectFromUrl(APICall[0]);
+                return json;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        protected void onPostExecute(JSONObject json) {
+            if (json == null) {
+                Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    Integer participantId = null;
+                    Integer kills;
+                    Integer deaths;
+                    Integer assists;
+                    Integer champLevel;
+                    Boolean win;
+                    JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
+                    for(int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject player = jsonArray.getJSONObject(i);
+                        if(accountId.equals(player.getJSONObject("player").get("accountId"))) {
+                            participantId = (Integer) player.get("participantId");
+                        }
+                    }
+                    jsonArray = (JSONArray) json.get("participants");
+                    for(int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject player = jsonArray.getJSONObject(i);
+                        if(participantId == (Integer) player.get("participantId")) {
+                            JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
+                            kills = (Integer) statsObject.get("kills");
+                            deaths = (Integer) statsObject.get("kills");
+                            assists = (Integer) statsObject.get("assists");
+                            champLevel = (Integer) statsObject.get("champLevel");
+                            win = (Boolean) statsObject.get("win");
+                            matchKills3.setText(String.valueOf("Kills: " + kills));
+                            matchDeaths3.setText(String.valueOf("Deaths: " + deaths));
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    class RetrieveMatch4 extends AsyncTask<String, Void, JSONObject> {
+        private Exception exception;
+        protected JSONObject doInBackground(String... APICall) {
+            try {
+                JSONObject json = readJsonObjectFromUrl(APICall[0]);
+                return json;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        protected void onPostExecute(JSONObject json) {
+            if (json == null) {
+                Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    Integer participantId = null;
+                    Integer kills;
+                    Integer deaths;
+                    Integer assists;
+                    Integer champLevel;
+                    Boolean win;
+                    JSONArray jsonArray = (JSONArray) json.get("participantIdentities");
+                    for(int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject player = jsonArray.getJSONObject(i);
+                        if(accountId.equals(player.getJSONObject("player").get("accountId"))) {
+                            participantId = (Integer) player.get("participantId");
+                        }
+                    }
+                    jsonArray = (JSONArray) json.get("participants");
+                    for(int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject player = jsonArray.getJSONObject(i);
+                        if(participantId == (Integer) player.get("participantId")) {
+                            JSONObject statsObject = (JSONObject) player.getJSONObject("stats");
+                            kills = (Integer) statsObject.get("kills");
+                            deaths = (Integer) statsObject.get("kills");
+                            assists = (Integer) statsObject.get("assists");
+                            champLevel = (Integer) statsObject.get("champLevel");
+                            win = (Boolean) statsObject.get("win");
+                            matchKills4.setText(String.valueOf("Kills: " + kills));
+                            matchDeaths4.setText(String.valueOf("Deaths: " + deaths));
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -374,12 +895,11 @@ public class statScreen extends AppCompatActivity {
         }
         protected void onPostExecute(JSONArray json) {
 
-            textView.setVisibility(View.INVISIBLE);
-            textView2.setVisibility(View.INVISIBLE);
-            textView3.setVisibility(View.INVISIBLE);
-            //ldrBoardList.setVisibility(View.VISIBLE);
+            statTop.setVisibility(View.INVISIBLE);
+            soloLayout.setVisibility(View.INVISIBLE);
+            flexLayout.setVisibility(View.INVISIBLE);
+            matchesScroll.setVisibility(View.GONE);
             ldrScroll.setVisibility(View.VISIBLE);
-            //homeList.setVisibility(View.GONE);
             homeScroll.setVisibility(View.GONE);
             JSONArray sortedArray = new JSONArray();
             try {
@@ -455,15 +975,15 @@ public class statScreen extends AppCompatActivity {
         }
 
         protected void onPostExecute(JSONObject json) throws NullPointerException{
-            //ArrayList<Integer> champs = new ArrayList<>();
-            String[] pic;
-            textView.setVisibility(View.INVISIBLE);
-            textView2.setVisibility(View.INVISIBLE);
-            textView3.setVisibility(View.INVISIBLE);
-            //ldrBoardList.setVisibility(View.GONE);
+
+
+            statTop.setVisibility(View.INVISIBLE);
+            soloLayout.setVisibility(View.INVISIBLE);
+            flexLayout.setVisibility(View.INVISIBLE);
             ldrScroll.setVisibility(View.GONE);
-            //homeList.setVisibility(View.VISIBLE);
+            matchesScroll.setVisibility(View.GONE);
             homeScroll.setVisibility(View.VISIBLE);
+
             if (json == null) {
                 Toast.makeText(getApplicationContext(), "Invalid Summoner Name", Toast.LENGTH_LONG).show();
             } else {
@@ -523,17 +1043,19 @@ public class statScreen extends AppCompatActivity {
     public void setInitialInvisibility(){
         if(game.equals("tft")) {
             ldrScroll.setVisibility(View.GONE);
-            textView.setVisibility(View.GONE);
-            textView2.setVisibility(View.INVISIBLE);
-            textView3.setVisibility(View.INVISIBLE);
             homeScroll.setVisibility(View.INVISIBLE);
+            statTop.setVisibility(View.INVISIBLE);
+            soloLayout.setVisibility(View.INVISIBLE);
+            flexLayout.setVisibility(View.INVISIBLE);
+            matchesScroll.setVisibility(View.GONE);
         }
         else if(game.equals("lol")) {
             homeScroll.setVisibility(View.VISIBLE);
             ldrScroll.setVisibility(View.GONE);
-            textView.setVisibility(View.INVISIBLE);
-            textView2.setVisibility(View.INVISIBLE);
-            textView3.setVisibility(View.INVISIBLE);
+            matchesScroll.setVisibility(View.GONE);
+            statTop.setVisibility(View.INVISIBLE);
+            soloLayout.setVisibility(View.INVISIBLE);
+            flexLayout.setVisibility(View.INVISIBLE);
         }
     }
 
